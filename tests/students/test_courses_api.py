@@ -101,7 +101,7 @@ def test_update_course(client, course_factory):
     }
     count_courses = Course.objects.count()
     #Act
-    response = client.patch(f'/api/v1/courses/3/', course_name)
+    response = client.patch(f'/api/v1/courses/{courses[3].id}/', course_name)
     #Assert
     assert response.status_code == 200
     data = response.json()
@@ -112,9 +112,11 @@ def test_update_course(client, course_factory):
 @pytest.mark.django_db
 def test_delete_course(client, course_factory):
     #Arrange
-    courses = course_factory(_quantity=2)
+    courses = course_factory(_quantity=6)
+    count_courses = Course.objects.count()
     #Act
-    response = client.delete('/api/v1/courses/1/')
+    response = client.delete(f'/api/v1/courses/{courses[3].id}/')
     #Assert
     assert response.status_code == 204
-    assert courses[0].id not in list(course.id for course in Course.objects.all())
+    assert courses[3].id not in list(course.id for course in Course.objects.all())
+    assert Course.objects.count() == count_courses - 1
